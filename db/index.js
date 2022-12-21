@@ -239,8 +239,22 @@ async function getAllPosts() {
     const posts = await Promise.all(
       postIds.map((post) => getPostById(post.id))
     );
-    console.log("#############", posts);
+    // console.log("#############", posts);
     return posts;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getAllTags() {
+  try {
+    const { rows: name } = await client.query(
+      `SELECT *
+        FROM tags;
+        `
+    );
+
+    return name;
   } catch (error) {
     throw error;
   }
@@ -317,6 +331,25 @@ async function getPostsByTagName(tagName) {
   }
 }
 
+async function getUserByUsername(username) {
+  try {
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+      SELECT *
+      FROM users
+      WHERE username=$1;
+    `,
+      [username]
+    );
+
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   client,
   createUser,
@@ -331,6 +364,8 @@ module.exports = {
   getPostById,
   addTagsToPost,
   getPostsByTagName,
+  getAllTags,
+  getUserByUsername,
 };
 
 //In general, in our db/index.js file we should provide the utility functions that the rest of our application will use. We will call them from the seed file, but also from our main application file.
